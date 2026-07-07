@@ -1,10 +1,10 @@
-import { GoogleGenAI } from "@google/genai";
+import Groq from "groq-sdk"
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 
-const client = new GoogleGenAI({
-  apiKey: process.env.GOOGLE_GENAI_API_KEY,
-});
+
+const client = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+})
 
 const interviewReportSchema = z.object({
   matchScore: z
@@ -133,22 +133,37 @@ Do not omit any fields.
 `;
 
   try {
-    const response = await client.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseJsonSchema: zodToJsonSchema(interviewReportSchema),
+  const response = await client.chat.completions.create({
+    model: "openai/gpt-oss-20b",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are an expert technical recruiter. Return only valid JSON using the provided schema.",
       },
-    });
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "interview_report",
+        strict: true,
+        schema: z.toJSONSchema(interviewReportSchema),
+      },
+    },
+  });
 
-    const report = JSON.parse(response.text);
-    // console.log(report);
-    return report;
-  } catch (error) {
-    console.error("Error occurred in ai service:", error.message);
-    throw error;
-  }
-} 
+  const rawReport = JSON.parse(response.choices[0].message.content || "{}");
+  const report = interviewReportSchema.parse(rawReport);
+
+  return report;
+} catch (error) {
+  console.error("Error occurred in ai service:", error.message);
+  throw error;
+}
+}
 
 export default generateInterviewReport;

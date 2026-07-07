@@ -3,7 +3,8 @@ import Login from "./features/auth/pages/login";
 import Register from "./features/auth/pages/register";
 import ProtectedRoute from "./features/auth/components/ProtectRoute";
 import Home from "./features/interview/pages/Home";
-import Interview from "./features/interview/pages/Interview";
+import InterviewLayout from "./features/interview/pages/Interview";
+
 
 export const router = createBrowserRouter(
     [
@@ -24,7 +25,7 @@ export const router = createBrowserRouter(
         {
            path:"interview/:interviewId",
            element:<ProtectedRoute>
-             <Interview />
+            <InterviewLayout />
            </ProtectedRoute>
         }
     ]
