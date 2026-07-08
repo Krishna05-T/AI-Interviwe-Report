@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { JWTverify } from "../middleware/auth.middleware.js";
-import { reportController, getAllInterviewReportController, generateInterviewReportByIDController } from "../controller/report.controller.js";
+import { reportController, getAllInterviewReportController, generateInterviewReportByIDController, generateResumePDFController } from "../controller/report.controller.js";
 import { upload } from "../middleware/file.midddleware.js";
 
 const reportRouter = Router()
@@ -27,6 +27,14 @@ reportRouter.get("/id/:interviewId", JWTverify, generateInterviewReportByIDContr
  * @access private
  */
 reportRouter.get("/ai-service", JWTverify, getAllInterviewReportController)
+
+/**
+ * @route GET /api/v1/report/generate-resume/pdf
+ * @description generate resume pdf on the basis of user self description, resume content and job description
+ * @access private
+ */
+
+reportRouter.post("/generate-resume/pdf/:interviewId", JWTverify, generateResumePDFController)
 
 export default reportRouter;
 

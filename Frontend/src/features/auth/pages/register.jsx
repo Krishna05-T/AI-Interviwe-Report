@@ -16,7 +16,7 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await handleRegister(fullname, username, email, password)
+        await handleRegister({fullname, username, email, password})
         navigate("/")
     }
 

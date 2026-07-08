@@ -28,6 +28,9 @@ export const useAuth = () => {
         setLoading(true)
         try {
             const data = await register({ fullname, username, email, password });
+            if (!data) {
+                return;
+            }
             setUser(data.data)
         } catch (error) {
             console.log("Error occrue in handleRegister ", error)

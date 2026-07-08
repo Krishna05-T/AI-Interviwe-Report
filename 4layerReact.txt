@@ -21,8 +21,6 @@ in this we create service where we define how frontend interact with backend api
 
 
 
-
-
 {
   report: [
     'Match Score',

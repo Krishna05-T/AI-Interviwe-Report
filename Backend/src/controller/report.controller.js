@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { PDFParse } from "pdf-parse"
-import generateInterviewReport from "../service/ai.service.js";
+import {generateInterviewReport, generateResumePDF} from "../service/ai.service.js";
 import { Report } from "../model/Report.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -65,6 +65,7 @@ const generateInterviewReportByIDController = asyncHandler(async (req, res) => {
         new ApiResponse(200, "Interview report fetch successfully", interviewReport)
     )
 })
+
 const getAllInterviewReportController = asyncHandler(async(req, res) => {
     const interviewReport = await Report.find({user : req.user._id}).sort({ createdAt: -1}).select("-resume -selfDescription -jobDescription -__v -technicalQuestion -behavioralQuestion -skillGap -preparationPlan")
 
@@ -74,4 +75,28 @@ const getAllInterviewReportController = asyncHandler(async(req, res) => {
         new ApiResponse(200, "Interview reports fetched successfully ",interviewReport)
     )
 })
-export { reportController, generateInterviewReportByIDController, getAllInterviewReportController }
+
+const generateResumePDFController = asyncHandler(async (req, res) => {
+    const { interviewId } = req.params;
+
+    const interviewReport = await Report.findById(interviewId)
+
+    if(!interviewReport) {
+        throw new ApiError(400, "Interview report id not found ")
+    }
+
+    const { resume, jobDescription, selfDescription } = interviewReport;
+
+    const pdfBuffer = await generateResumePDF({resume, jobDescription, selfDescription})
+
+    res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename=${interviewId}.pdf`
+    })
+
+    return res
+    .status(200)
+    .send(pdfBuffer)
+}) 
+
+export { reportController, generateInterviewReportByIDController, getAllInterviewReportController, generateResumePDFController }

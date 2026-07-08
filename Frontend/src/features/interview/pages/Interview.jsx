@@ -59,7 +59,7 @@ const RoadMapDay = ({ day }) => (
 
 const InterviewLayout = () => {
   const [activeNav, setActiveNav] = useState("technical");
-  const { report, generateReportById, loading } = useInterview();
+  const { report, generateReportById, loading, getResumePdf } = useInterview();
   const { interviewId } = useParams()
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const InterviewLayout = () => {
         </h1>
 
         <p className="mt-2 text-lg text-gray-400">
-          Please wait while we prepare your interview plan.
+          Please wait while we prepare everything.
         </p>
       </main>
     )
@@ -111,7 +111,9 @@ const InterviewLayout = () => {
               </button>
             ))}
           </div>
-          <button className="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold transition hover:bg-indigo-700">
+          <button 
+          onClick={() => getResumePdf(interviewId)}
+          className="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold transition hover:bg-indigo-700">
             Download Resume
           </button>
         </nav>
