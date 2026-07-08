@@ -6,7 +6,7 @@ import Loading from "../components/Loading";
 function Login() {
 
     const navigate = useNavigate()
-    const { loading, handleLogin } = useAuth()
+    const { loading, handleLogin, error } = useAuth()
 
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
@@ -15,7 +15,10 @@ function Login() {
     const handleSubmit = async (e) => {
 
         e.preventDefault();
-        await handleLogin({ username, email, password })
+        const loggedInUser = await handleLogin({ username, email, password })
+        if (!loggedInUser) {
+            return
+        }
         navigate("/")
     }
 
@@ -83,6 +86,12 @@ function Login() {
                             className="w-full rounded-xl border border-gray-600 bg-[#0f172a] px-4 py-3 text-white outline-none transition-all placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
+
+                    {error && (
+                        <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-300">
+                            {error}
+                        </div>
+                    )}
 
                     <button
                         type="submit"

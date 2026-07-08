@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useInterview } from "../Hooks/useInterview";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../auth/Hooks/useAuth";
 
 
 const Home = () => {
 
     const { loading, generateReport, reports, getAllReports } = useInterview()
+    const { handleLogout } = useAuth()
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const resumeInputRef = useRef()
@@ -19,6 +21,11 @@ const Home = () => {
             console.log("Report not generated")
         }
         navigate(`/interview/${data._id}`)
+    }
+
+    const handleLogoutClick = async () => {
+        await handleLogout()
+        navigate("/login")
     }
 
     useEffect(() => {
@@ -43,6 +50,19 @@ const Home = () => {
    return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-black px-6 py-10">
       <div className="mx-auto max-w-7xl flex flex-col gap-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Interview Master</h1>
+            <p className="mt-1 text-gray-400">Create and review your interview plans.</p>
+          </div>
+          <button
+            onClick={handleLogoutClick}
+            className="rounded-xl border border-red-500/40 bg-red-500/10 px-5 py-3 font-semibold text-red-300 transition hover:bg-red-500/20"
+          >
+            Logout
+          </button>
+        </div>
+
         {/* Top Section: Left + Right */}
         <div className="flex flex-col gap-8 lg:flex-row">
           {/* Left Side */}

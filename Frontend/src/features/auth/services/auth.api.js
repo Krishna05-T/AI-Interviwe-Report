@@ -19,7 +19,7 @@ export const register = async ({fullname, username, email, password}) => {
         
         return respones.data
     } catch (error) {
-        console.log("Error occur form register" + error)
+        throw error
     }
 }
 
@@ -31,7 +31,7 @@ export const login = async ({username, email, password}) => {
 
         return respones.data
     } catch (error) {
-        console.log("Error occure form login "+ error.message)
+        throw error
     }
 }
 

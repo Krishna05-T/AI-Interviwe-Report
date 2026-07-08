@@ -6,19 +6,27 @@ export const useAuth = () => {
     const context = useContext(AuthContext)
     // AuthContext provide value so we desturcture it
 
-    const { user, setUser, loading, setLoading } = context;
+    const { user, setUser, loading, setLoading, error, setError } = context;
 
     // hook layer maintane flow mean when user login, for login we call api, but before calling api we show loading screen to user, so set loading part true here
 
     const handleLogin = async ({ username, email, password }) => {
         setLoading(true)
+        setError(null)
         //we set here but loading screen ui code on ui layer
         try {
             const data = await login({ username, email, password })
             // login => service: auth.api.js : login => axios => Backend => routes: user.route.js: login => controller: user.controller.js: return "response" jo postman me aara tha to ab
+            if(!data) {
+                setError("Login failed")
+                return null;
+            }
             setUser(data.data.loggedInUser)
+            return data.data.loggedInUser
         } catch (error) {
+            setError(error?.response?.data?.message || "Invalid username/email or password")
             console.log("Error occrue in handleLogin ", error.message)
+            return null
         } finally {
             setLoading(false)
         }
@@ -29,10 +37,12 @@ export const useAuth = () => {
         try {
             const data = await register({ fullname, username, email, password });
             if (!data) {
+                setError("Registration failed")
                 return;
             }
             setUser(data.data)
         } catch (error) {
+            setError(error?.response?.data?.message || "Registration failed")
             console.log("Error occrue in handleRegister ", error)
         } finally {
             setLoading(false)
@@ -99,6 +109,6 @@ export const useAuth = () => {
     // If the backend returns a user, setUser(data.data) updates the initial null user to the logged-in user.
     // useEffect helps because this check happens automatically after the first render, without needing the user to click anything.
 
-    return { user, loading, handleLogin, handleRegister, handleLogout, handleUpdatePass }
+    return { user, loading, error, handleLogin, handleRegister, handleLogout, handleUpdatePass }
 }
 
