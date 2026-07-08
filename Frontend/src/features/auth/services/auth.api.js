@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const api = axios.create({
-    baseURL : "http://localhost:5000/api/v1",
+    baseURL: import.meta.env.VITE_API_URL,
     withCredentials : true
 })  // thing which use repeatally create here
 
@@ -12,11 +12,8 @@ export const register = async ({fullname, username, email, password}) => {
             throw new Error("All field are required")
         }
 
-        const respones = await axios.post('http://localhost:5000/api/v1/users/register', { fullname, username, email, password },{
-            withCredentials : true
-            // allows cookies—such as authentication or session cookies—to be sent and received.
-        })
-        
+        const respones = await api.post('/users/register', { fullname, username, email, password })
+
         return respones.data
     } catch (error) {
         throw error
