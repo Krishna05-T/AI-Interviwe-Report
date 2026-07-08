@@ -19,7 +19,7 @@ reportRouter.post("/ai-service", JWTverify, upload.single("resume"), reportContr
  * @access private
  */
 
-reportRouter.get("/report/id/:interviewId", JWTverify, generateInterviewReportByIDController)
+reportRouter.get("/id/:interviewId", JWTverify, generateInterviewReportByIDController)
 
 /**
  * @route GET /api/v1/report/ai-service
