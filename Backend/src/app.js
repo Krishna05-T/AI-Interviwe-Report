@@ -11,8 +11,8 @@ app.use(express.urlencoded({extended : true, limit : "20kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 app.use(cors({
+    credentials : true, // cookie data handle
     origin : process.env.FRONTEND_URL,
-    credentials : true // cookie data handle
 }))
 
 
