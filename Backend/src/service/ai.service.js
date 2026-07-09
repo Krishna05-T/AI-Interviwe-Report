@@ -182,13 +182,9 @@ preparationPlan must contain exactly 14 items.
 
 
 async function generatePdfFormHtml(htmlContent) {
-   const executablePath = await puppeteer.executablePath();
-   console.log("Chrome Path:", executablePath);
-
   const browser = await puppeteer.launch({
-    executablePath,
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   });
   const page = await browser.newPage();
   await page.setContent(htmlContent, { waitUntil: "networkidle2" })
