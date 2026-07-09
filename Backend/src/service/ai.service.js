@@ -187,7 +187,7 @@ async function generatePdfFormHtml(htmlContent) {
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   });
   const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: "networkidle2" })
+  await page.setContent(htmlContent, { waitUntil: "domcontentloaded" })
 
   const pdfBuffer = await page.pdf({
     format: "A4",
