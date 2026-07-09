@@ -41,7 +41,7 @@ const Home = () => {
                 </h1>
 
                 <p className="mt-2 text-lg text-gray-400">
-                    Please wait while we prepare your interview plan.
+                    Please wait while we prepare everything.
                 </p>
             </main>
         )
