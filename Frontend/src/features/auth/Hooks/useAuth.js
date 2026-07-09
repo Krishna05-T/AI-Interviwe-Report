@@ -34,16 +34,19 @@ export const useAuth = () => {
 
     const handleRegister = async ({ fullname, username, email, password }) => {
         setLoading(true)
+        setError(null)
         try {
             const data = await register({ fullname, username, email, password });
             if (!data) {
                 setError("Registration failed")
-                return;
+                return null;
             }
             setUser(data.data)
+            return data.data
         } catch (error) {
             setError(error?.response?.data?.message || "Registration failed")
             console.log("Error occrue in handleRegister ", error)
+            return null
         } finally {
             setLoading(false)
         }

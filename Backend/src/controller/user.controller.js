@@ -23,7 +23,7 @@ const userRegister = asyncHandler(async (req, res) => {
     const { fullname, username, email, password } = req.body;
 
     if (
-        [fullname, username, email, password].some((field) => { field?.trim === "" })
+        [fullname, username, email, password].some((field) => !field || field.trim() === "")
     ) {
         throw new ApiError(400, "All field are required")
     }
@@ -91,8 +91,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const option = {
         httpOnly: true,
-        secure: true,
-        sameSite: "none"
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     }
 
     return res
@@ -131,8 +131,8 @@ const loggoutUser = asyncHandler(async (req, res) => {
 
     const option = {
         httpOnly : true,
-        secure : true,
-        sameSite: "none"
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     }
 
     return res

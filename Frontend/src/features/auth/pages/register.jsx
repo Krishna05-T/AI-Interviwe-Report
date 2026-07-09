@@ -7,7 +7,7 @@ import Loading from "../components/Loading";
 
 const Register = () => {
 
-    const { loading, handleRegister } = useAuth();
+    const { loading, error, handleRegister } = useAuth();
     const navigate = useNavigate()
     const [fullname, setFullname] = useState("")
     const [username, setUsername] = useState("")
@@ -16,7 +16,10 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await handleRegister({fullname, username, email, password})
+        const registeredUser = await handleRegister({fullname, username, email, password})
+        if (!registeredUser) {
+            return
+        }
         navigate("/")
     }
 
@@ -104,6 +107,12 @@ const Register = () => {
                             className="w-full rounded-xl border border-gray-600 bg-[#0f172a] px-4 py-3 text-white outline-none transition-all placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
+
+                    {error && (
+                        <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-300">
+                            {error}
+                        </div>
+                    )}
 
                     <button
                         className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white  transition  hover:bg-indigo-700 hover:scale-102 duration-300 ease-in-out"

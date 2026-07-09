@@ -27,7 +27,7 @@ export const JWTverify = asyncHandler(async (req, res, next) => {
         req.user = user
         next()
     } catch (error) {
-        throw new ApiError(400, "Token" + error.message || "invalid access")
+        throw new ApiError(error.statusCode || 401, error.message || "invalid access")
     }
 
 })
