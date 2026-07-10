@@ -225,6 +225,7 @@ ${jobDescription}
 Instructions:
 
 - Mention the name, gmail, github and linkedIn link as give  in ${resume} by the user.
+- Mention Education as give in the ${resume} mention correct degree and collage name if available in the ${resume}
 - Return ONLY a valid JSON object with a single field named "html".
 - The "html" field must contain the complete HTML document.
 - Tailor the resume specifically to the provided Job Description by emphasizing the candidate's most relevant skills, projects, experience, and achievements.
