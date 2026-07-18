@@ -1,5 +1,7 @@
 import { BlackList } from "../model/blacklist.model.js";
+import { randomInt } from "crypto";
 import { User } from "../model/user.model.js";
+import { sendEmailService } from "../service/email.service.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -18,6 +20,10 @@ const genrateAccessAndRefreshToken = async (userId) => {
         throw new ApiError(400, "token are not genrated")
     }
 };
+
+const genrateOtp = () => {
+    return randomInt(100000, 1000000).toString()
+}
 
 const userRegister = asyncHandler(async (req, res) => {
     const { fullname, username, email, password } = req.body;
@@ -40,24 +46,71 @@ const userRegister = asyncHandler(async (req, res) => {
         throw new ApiError(401, "user is already exist")
     }
 
+    const otp = genrateOtp()
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000)
+
     const user = await User.create({
         fullname,
         username,
         email,
-        password
+        password,
+        emailVerificationOtp : otp,
+        emailVerificationOtpExpiresAt : otpExpiresAt,
+        isEmailVerified : false
     })
 
-    const createUser = await User.findById(user._id).select("-password -refreshtoken")
+    const createUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationOtp")
     if (!createUser) {
         throw new ApiError(401, "User is not create in database")
     }
 
+     await sendEmailService(createUser.email, createUser.fullname, otp)
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "user is register successfully", createUser,)
+            new ApiResponse(200, "user is register successfully. OTP sent to email", createUser,)
         )
 
+})
+
+const verifyEmailOtp = asyncHandler(async (req, res) => {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+        throw new ApiError(400, "email and otp are required")
+    }
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        throw new ApiError(404, "user is not found")
+    }
+
+    if (user.isEmailVerified) {
+        throw new ApiError(400, "email is already verified")
+    }
+
+    if (user.emailVerificationOtp !== otp) {
+        throw new ApiError(400, "invalid otp")
+    }
+
+    if (!user.emailVerificationOtpExpiresAt || user.emailVerificationOtpExpiresAt < new Date()) {
+        throw new ApiError(400, "otp is expired")
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationOtp = undefined;
+    user.emailVerificationOtpExpiresAt = undefined;
+
+    await user.save({ validateBeforeSave : false })
+
+    const verifiedUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationOtp")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, "email verified successfully", verifiedUser)
+    )
 })
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -77,6 +130,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     if (!user) {
         throw new ApiError(400, "user is not exist")
+    }
+
+    if (user.isEmailVerified === false) {
+        throw new ApiError(403, "please verify your email before login")
     }
 
     const passwordCorrect = await user.checkPassword(password)
@@ -182,6 +239,7 @@ const UpdatePass = asyncHandler(async (req, res) => {
 })
 export {
     userRegister,
+    verifyEmailOtp,
     loginUser,
     loggoutUser,
     getUser,

@@ -20,6 +20,21 @@ export const register = async ({fullname, username, email, password}) => {
     }
 }
 
+export const verifyEmail = async ({email, otp}) => {
+    try {
+
+        if(!email || !otp) {
+            throw new Error("Email and OTP are required")
+        }
+
+        const respones = await api.post('/users/verify-email', { email, otp })
+
+        return respones.data
+    } catch (error) {
+        throw error
+    }
+}
+
 export const login = async ({username, email, password}) => {
     try {
         const respones = await api.post('/users/login', {

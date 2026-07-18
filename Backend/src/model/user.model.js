@@ -25,7 +25,17 @@ const userSchema = new mongoose.Schema({
     refreshToken : {
         type : String
     },
-},{ timeseries : true})
+    isEmailVerified : {
+        type : Boolean,
+        default : false
+    },
+    emailVerificationOtp : {
+        type : String
+    },
+    emailVerificationOtpExpiresAt : {
+        type : Date
+    },
+},{ timestamps : true})
 
 
 userSchema.pre("save", async function () {

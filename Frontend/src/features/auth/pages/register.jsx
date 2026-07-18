@@ -20,7 +20,8 @@ const Register = () => {
         if (!registeredUser) {
             return
         }
-        navigate("/")
+        localStorage.setItem("verifyEmail", registeredUser.email)
+        navigate("/verify-email")
     }
 
     if (loading) {
@@ -117,7 +118,7 @@ const Register = () => {
                     <button
                         className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white  transition  hover:bg-indigo-700 hover:scale-102 duration-300 ease-in-out"
                     >
-                        Sign In
+                        Register
                     </button>
 
                 </form>
