@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react"
 import { AuthContext } from "../auth.context"
-import { register, login, logout, getUser, UpdatePass, verifyEmail } from "../services/auth.api"
+import { register, login, logout, getUser, UpdatePass } from "../services/auth.api"
 
 export const useAuth = () => {
     const context = useContext(AuthContext)
@@ -46,26 +46,6 @@ export const useAuth = () => {
         } catch (error) {
             setError(error?.response?.data?.message || "Registration failed")
             console.log("Error occrue in handleRegister ", error)
-            return null
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleVerifyEmail = async ({ email, otp }) => {
-        setLoading(true)
-        setError(null)
-        try {
-            const data = await verifyEmail({ email, otp });
-            if (!data) {
-                setError("Email verification failed")
-                return null;
-            }
-            setUser(data.data)
-            return data.data
-        } catch (error) {
-            setError(error?.response?.data?.message || "Email verification failed")
-            console.log("Error occrue in handleVerifyEmail ", error)
             return null
         } finally {
             setLoading(false)
@@ -132,6 +112,6 @@ export const useAuth = () => {
     // If the backend returns a user, setUser(data.data) updates the initial null user to the logged-in user.
     // useEffect helps because this check happens automatically after the first render, without needing the user to click anything.
 
-    return { user, loading, error, handleLogin, handleRegister, handleVerifyEmail, handleLogout, handleUpdatePass }
+    return { user, loading, error, handleLogin, handleRegister, handleLogout, handleUpdatePass }
 }
 
